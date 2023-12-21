@@ -1,10 +1,12 @@
 package com.tony.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tony.constant.ProductCategory;
 import com.tony.dto.ProductQueryParams;
 import com.tony.dto.ProductRequest;
 import com.tony.model.Product;
 import com.tony.service.ProductService;
+import com.tony.service.QueueService;
 import com.tony.util.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,9 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private QueueService queueService;
 
     @GetMapping
     public ResponseEntity<Page<Product>> getProducts(
@@ -73,6 +78,12 @@ public class ProductController {
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+    }
+
+    @PostMapping("/enqueue")
+    public ResponseEntity enqueueProductToRedis(@RequestBody @Valid ProductRequest productRequest) throws JsonProcessingException {
+        queueService.enqueueProduct(productRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping

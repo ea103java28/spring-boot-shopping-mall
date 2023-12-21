@@ -1,20 +1,23 @@
 ## Introduction
 
-E-commerce website developed using Spring Boot.
+Shopping-mall that developed using SpringBoot.
 
 ## Environment
 
-1. Java JDK 11
+1. Java JDK 8
 2. Spring Boot: 2.3.7.RELEASE
-3. MySQL: 8.X
+3. MySQL: latest
+
 
 ## Technologies
 
 1. Unit Test: JUnit 5 & H2 Database
 2. Spring JDBC
-3. Spring Validation
-4. Lombok
-5. Encryption with MD5 Hash
+4. Spring Validation
+5. Lombok
+6. Encryption with MD5 Hash
+7. Spring RabbitMQ
+8. Spring Redis
 
 ## API
 
@@ -35,6 +38,7 @@ E-commerce website developed using Spring Boot.
    |*method*|*url*|*description*|
    |--|--|--|
    |POST|`localhost:8080/products`|Add|
+   |GET|`localhost:8080/products/`|Query All|
    |GET|`localhost:8080/products/{productId}`|Query|
    |PUT|`localhost:8080/products/{productId}`|Update|
    |DELETE|`localhost:8080/products/{productId}`|Delete|
@@ -109,12 +113,55 @@ E-commerce website developed using Spring Boot.
 
 Currently using MockMvc to test each functionality of the Controller layer.
 
-## Database
+## Dockerfile
 
-Database schema and data are located in [docs](https://github.com/ea103java28/shopping-mall/tree/master/docs).
+### MySQL:
 
-##  Dockerfile：
+ ```
+FROM mysql:latest
 
+ENV MYSQL_ROOT_PASSWORD=1234
+ENV MYSQL_CHARSET=utf8mb4
+ENV MYSQL_COLLATION=utf8mb4_unicode_ci
+
+EXPOSE 3306
+
+CMD ["mysqld"]
+ ```
+```
+$ mkdir -p ~/mysql/data ~/mysql/logs ~/mysql/conf
+$ docker build -t my-mysql .
+$ sudo docker run --name my-mysql -p 3306:3306 -v $PWD/conf:/etc/mysql/conf.d -v $PWD/logs:/logs -v $PWD/data:/var/lib/mysql -d my-mysql
+$ docker exec -it my-mysql bash
+```
+
+### Redis:
+
+redis.config:
+https://redis.io/docs/management/config/
+
+```
+FROM redis:latest
+
+ENV MY_PORT=6379
+
+COPY ./redis.conf /usr/local/etc/redis/redis.conf
+
+EXPOSE $MY_PORT
+
+CMD ["redis-server"]
+```
+
+```
+$ docker build -t my-redis .
+$ docker run --name my-redis -p 6379:6379 -d my-redis redis-server --appendonly yes
+$ docker exec -it my-redis bash
+$ redis-cli --raw
+$ ping
+$ exit
+```
+
+### RabbitMQ:
 ```
 FROM rabbitmq:management
 
@@ -124,9 +171,11 @@ ENV RABBITMQ_DEFAULT_PASS=1234
 EXPOSE 15672 5672
 ```
 
-
 ```
 $ docker build -t my-rabbitmq .
-
 $ docker run --name my-rabbitmq -d -p 15672:15672 -p 5672:5672 my-rabbitmq
 ```
+
+## Database
+
+Database schema and data are located in [docs](https://github.com/ea103java28/spring-boot-shopping-mall/tree/main/docs).
