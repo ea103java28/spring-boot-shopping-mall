@@ -40,4 +40,9 @@ public class QueueServiceImpl implements QueueService {
         json = redisTemplate.opsForList().rightPop(productQueueName).toString();
         return objectMapper.readValue(json, Product.class);
     }
+
+    @Override
+    public long getQueueSize(String key) {
+        return redisTemplate.opsForList().size(key);
+    }
 }
