@@ -13,7 +13,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-@PropertySource("classpath:queueName.properties")
+@PropertySource("classpath:redis.properties")
 @Service
 public class QueueServiceImpl implements QueueService {
 

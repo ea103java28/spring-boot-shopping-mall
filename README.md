@@ -38,10 +38,11 @@ Shopping-mall that developed using SpringBoot.
    |*method*|*url*|*description*|
    |--|--|--|
    |POST|`localhost:8080/products`|Add|
-   |GET|`localhost:8080/products/`|Query All|
    |GET|`localhost:8080/products/{productId}`|Query|
    |PUT|`localhost:8080/products/{productId}`|Update|
    |DELETE|`localhost:8080/products/{productId}`|Delete|
+   |GET|`localhost:8080/products`|Query All|
+   |POST|`localhost:8080/products/enqueue`|EnqueueProductToRedis|
 
    POST & PUT request body
      ```
