@@ -10,4 +10,5 @@ public interface QueueService {
 
     public Product dequeueProduct() throws JsonProcessingException;
 
+    public long getQueueSize(String key);
 }
