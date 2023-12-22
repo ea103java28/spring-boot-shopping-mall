@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.tony</groupId>
-    <artifactId>spring-boot-dshopping-mall</artifactId>
+    <artifactId>spring-boot-shopping-mall</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>shopping-mall</name>
     <description>spring-boot-shopping-mall</description>
@@ -65,6 +65,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>31.1-jre</version>
         </dependency>
 
     </dependencies>

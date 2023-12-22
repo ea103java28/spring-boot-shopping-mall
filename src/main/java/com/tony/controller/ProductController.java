@@ -42,7 +42,7 @@ public class ProductController {
             @RequestParam(defaultValue = "desc") String sort,
 
             // 分頁 Pagination
-            @RequestParam(defaultValue = "5") @Max(1000) @Min(0) Integer limit,
+            @RequestParam(defaultValue = "10000") @Max(10000) @Min(0) Integer limit,
             @RequestParam(defaultValue = "0") @Min(0) Integer offset) {
 
         ProductQueryParams productQueryParams = new ProductQueryParams();
@@ -88,6 +88,7 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody @Valid ProductRequest productRequest) {
+
         Integer productId = productService.createProduct(productRequest);
 
         Product product = productService.getProductById(productId);
