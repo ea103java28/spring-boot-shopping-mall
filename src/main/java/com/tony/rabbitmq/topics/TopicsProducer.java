@@ -18,7 +18,7 @@ public class TopicsProducer {
     String routingKey = null;
 
 
-    public void ProducerProduct(Product product) {
+    public void sendProduct(Product product) {
         routingKey = product.getCategory().toString();
         rabbitmqTemplate.convertAndSend(topicsExchangeProduct, routingKey, product);
     }

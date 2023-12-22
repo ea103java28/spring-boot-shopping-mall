@@ -1,6 +1,6 @@
 ## Introduction
 
-Shopping-mall that developed using SpringBoot.
+A shopping mall backend developed using SpringBoot and employing Redis for caching, along with RabbitMQ for message queuing, is designed to deliver high-performance and scalable services.
 
 ## Environment
 

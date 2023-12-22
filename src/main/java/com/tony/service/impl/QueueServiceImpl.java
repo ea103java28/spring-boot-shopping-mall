@@ -25,19 +25,19 @@ public class QueueServiceImpl implements QueueService {
     String json = null;
 
 
-    @Value("${queue.product.name}")
-    private String productQueueName;
+    @Value("${redis.queue.key.name}")
+    private String productQueueKey;
 
 
     @Override
     public void enqueueProduct(ProductRequest productRequest) throws JsonProcessingException {
         json = objectMapper.writeValueAsString(productRequest);
-        redisTemplate.opsForList().leftPush(productQueueName, json);
+        redisTemplate.opsForList().leftPush(productQueueKey, json);
     }
 
     @Override
     public Product dequeueProduct() throws JsonProcessingException {
-        json = redisTemplate.opsForList().rightPop(productQueueName).toString();
+        json = redisTemplate.opsForList().rightPop(productQueueKey).toString();
         return objectMapper.readValue(json, Product.class);
     }
 
