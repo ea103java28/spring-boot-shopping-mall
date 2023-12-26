@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration scan="true" scanPeriod="60 seconds">
+
+    <property name="Charset" value="UTF-8" />
+
+    <property name="FileName" value="erros" />
+
+    <property name="LogsLocation" value="logs" />
+
+    <property name="Format1" value="%d{HH:mm:ss.SSS} %-5level [%thread][%logger{0}.%M\\(%F:%L\\)] %msg%n" />
+
+    <!-- appender -->
+
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+
+        <encoder>
+
+            <pattern>${Format1}</pattern>
+
+            <charset>${Charset}</charset>
+
+        </encoder>
+
+    </appender>
+
+    <appender name="fileout" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+
+            <fileNamePattern>${LogsLocation}/${FileName}.%d{yyyyMMdd}.%i.log</fileNamePattern>
+
+            <maxHistory>30</maxHistory>
+
+            <maxFileSize>256MB</maxFileSize>
+
+        </rollingPolicy>
+
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+
+            <pattern>${Format1}</pattern>
+
+            <charset>${Charset}</charset>
+
+        </encoder>
+
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+
+            <MaxFileSize>100MB</MaxFileSize>
+
+        </triggeringPolicy>
+
+    </appender>
+
+
+
+    <!-- logger -->
+    <logger name="org.hibernate.SQL" level="TRACE">
+        <appender-ref ref="fileout" />
+    </logger>
+
+
+    <root level="info">
+
+        <appender-ref ref="fileout" />
+
+        <appender-ref ref="stdout" />
+
+    </root>
+
+</configuration>
+
+
+
+
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<configuration>-->
+
+<!--    &lt;!&ndash; 定义日志文件生成位置 &ndash;&gt;-->
+<!--    <property name="LOG_FILE" value="\logs\mylog.log" />-->
+
+<!--    <appender name="FILE" class="ch.qos.logback.core.FileAppender">-->
+<!--        <file>${LOG_FILE}</file>-->
+<!--        <encoder>-->
+<!--            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
+<!--        </encoder>-->
+<!--    </appender>-->
+
+<!--    &lt;!&ndash; 设置日志级别 &ndash;&gt;-->
+<!--    <root level="INFO">-->
+<!--        <appender-ref ref="FILE" />-->
+<!--    </root>-->
+<!--</configuration>-->

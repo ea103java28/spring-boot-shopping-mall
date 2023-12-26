@@ -8,6 +8,10 @@ import com.tony.model.Product;
 import com.tony.service.ProductService;
 import com.tony.service.QueueService;
 import com.tony.util.Page;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +35,22 @@ public class ProductController {
     @Autowired
     private QueueService queueService;
 
-    @GetMapping
+    @Operation(
+            summary = "Query Product List",
+            description = "query condition by category, search, orderBy, sort, limit, offset",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "get page of product info successfully"
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "sever error",
+                            content = @Content
+                    )
+            }
+    )
+    @GetMapping("/")
     public ResponseEntity<Page<Product>> getProducts(
             // 查詢條件 Filtering
             @RequestParam(required = false) ProductCategory category,
@@ -70,7 +89,7 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<Product> getProductById(@PathVariable Integer productId) {
+    public ResponseEntity<Product> getProductById(@Parameter(description = "id of product") @PathVariable Integer productId) {
         Product product = productService.getProductById(productId);
 
         if (product != null) {
