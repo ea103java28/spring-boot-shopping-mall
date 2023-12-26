@@ -74,6 +74,13 @@
             <version>31.1-jre</version>
         </dependency>
 
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.5.9</version>
+        </dependency>
+
     </dependencies>
 
     <build>
