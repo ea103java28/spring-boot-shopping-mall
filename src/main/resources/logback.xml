@@ -4,7 +4,7 @@
 
     <property name="Charset" value="UTF-8" />
 
-    <property name="FileName" value="erros" />
+    <property name="FileName" value="shopping-mall" />
 
     <property name="LogsLocation" value="logs" />
 
