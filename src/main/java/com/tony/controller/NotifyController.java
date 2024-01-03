@@ -1,18 +1,22 @@
 package com.tony.controller;
 
 
+import com.tony.dto.GmailRequest;
 import com.tony.service.NotifyService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
+import javax.validation.Valid;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Valid
 @RestController
 public class NotifyController {
 
@@ -29,21 +33,10 @@ public class NotifyController {
     }
 
 
-    @GetMapping("/gmail")
-    public String gmailNotify(@RequestParam(required = true) String to,
-                              @RequestParam(required = false) List<String> cc,
-                              @RequestParam(required = true) String subject,
-                              @RequestParam(required = true) String content,
-                              @RequestParam(required = false) List<String> imagePaths,
-                              @RequestParam(required = false) String imageUrls,
-                              @RequestParam(required = false) List<String> attachmentPaths) throws MessagingException, MalformedURLException {
-        List<String> toList = Arrays.asList(to.split(","));
-//        List<String> imageUrlList = Arrays.asList(imageUrls.split(","));
-        List<String> imageUrlList = null;
+    @PostMapping("/gmail")
+    public String gmailNotify(@RequestBody @Valid GmailRequest gmailRequest) throws MessagingException, IOException {
 
-        List<String> imagePathList = Arrays.asList( new String[]{ "\\files\\cat.jpg", "\\files\\insert.png" } );
-
-        notifyService.gmailNotify(toList, cc, subject, content, imagePathList, imageUrlList,  attachmentPaths);
+        notifyService.gmailNotify(gmailRequest);
         return "gmail notify successfully";
     }
 
