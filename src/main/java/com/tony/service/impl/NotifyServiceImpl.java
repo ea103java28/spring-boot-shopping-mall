@@ -1,5 +1,6 @@
 package com.tony.service.impl;
 
+import com.tony.dto.GmailRequest;
 import com.tony.service.NotifyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,9 +21,19 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.BiPredicate;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @PropertySource("classpath:env.properties")
@@ -78,48 +89,23 @@ public class NotifyServiceImpl implements NotifyService {
 
     }
 
-    /*
-    要先寫好html，在讓cid去對應
-     */
     @Override
-    public void gmailNotify(List<String> to,
-                            List<String> cc, String subject,
-                            String content,
-                            List<String> imagePaths,
-                            List<String> imageUrls,
-                            List<String> attachmentPaths) throws MessagingException, MalformedURLException {
+    public void gmailNotify(GmailRequest gmailRequest) throws MessagingException, IOException {
 
 
-        List<ClassPathResource> imageResources = null;
-        List<URL> imageUrlResources = null;
+
         List<FileSystemResource> attachmentResources = null;
+        Function<String, String> pathImageTypeFunction =
+                i -> {
+                   String[] iArr = i.split("\\.");
+                   return iArr[iArr.length - 1];
+                };
 
-        // image local path
-        if (imagePaths != null) {
-            imageResources = imagePaths.stream()
-                    .map(imagePath -> new ClassPathResource(imagePath))
-                    .collect(Collectors.toList());
-        }
-
-
-        // image url path
-        if (imageUrls != null) {
-            imageUrlResources = imageUrls.stream()
-                    .map(imageUrl -> {
-                        try {
-                            return new URL(imageUrl);
-                        } catch (MalformedURLException e) {
-                            e.printStackTrace();
-                            return null;
-                        }
-                    })
-                    .collect(Collectors.toList());
-        }
 
 
         // 添加附件
-        if (attachmentPaths != null) {
-            attachmentResources = attachmentPaths.stream()
+        if (gmailRequest.getAttachmentPaths() != null) {
+            attachmentResources = gmailRequest.getAttachmentPaths().stream()
                     .map(a -> new FileSystemResource(a))
                     .collect(Collectors.toList());
         }
@@ -129,7 +115,7 @@ public class NotifyServiceImpl implements NotifyService {
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
 
-        helper.setSubject(subject);
+        helper.setSubject(gmailRequest.getSubject());
 
 
         StringBuilder htmlBody = new StringBuilder();
@@ -140,17 +126,24 @@ public class NotifyServiceImpl implements NotifyService {
                 .append("</style>")
                 .append("</head>")
                 .append("<body>")
-                .append("<h3>").append(content).append("</h3>");
+                .append("<h3>").append(gmailRequest.getContent()).append("</h3>");
 
 
-        if (imageResources != null) {
-            imageResources.stream()
-                    .forEach(i -> htmlBody.append("<img src='cid:").append(i.getFilename()).append("' height='100px' width='auto' >").append("</img>"));
+        if (gmailRequest.getImagePaths() != null) {
+            for (String i : gmailRequest.getImagePaths()
+            ) {
+                htmlBody.append("<img src='data:image/").append(pathImageTypeFunction.apply(i)).append(";base64,").append(encodeImageToBase64(i)).append("' height='100px' width='auto' >");
+            }
         }
 
-        if (imageUrlResources != null) {
-            imageUrlResources.stream()
-                    .forEach(i -> htmlBody.append("<img src='cid:").append(i.getPath()).append("' height='100px' width='auto' >").append("</img>"));
+
+
+
+        if (gmailRequest.getImageUrls() != null) {
+            gmailRequest.getImageUrls()
+                    .stream()
+                    .filter(i -> i.endsWith(".jpg"))
+                    .forEach(url -> htmlBody.append("<img src='").append(url).append("' height='100px' width='auto' >").append("</img>"));
         }
 
 
@@ -161,27 +154,17 @@ public class NotifyServiceImpl implements NotifyService {
 
 
         helper.setText(htmlBody.toString(), true); // 使用true表示正文内容为HTML
+        System.out.println(htmlBody.toString());
 
-        if (to != null) {
-            helper.setTo(to.toArray(new String[0]));
+
+        if (gmailRequest.getTo() != null) {
+            helper.setTo(gmailRequest.getTo().toArray(new String[0]));
         }
 
-        if (cc != null) {
-            helper.setCc(cc.toArray(new String[0]));
+        if (gmailRequest.getCc() != null) {
+            helper.setCc(gmailRequest.getCc().toArray(new String[0]));
         }
 
-        if (imageResources != null) {
-            for (ClassPathResource i : imageResources) {
-                helper.addInline(i.getFilename(), i);
-            }
-        }
-
-        if (imageUrlResources != null) {
-            for (URL i : imageUrlResources) {
-                FileSystemResource imageResource = new FileSystemResource(i.getFile());
-                helper.addInline(i.getPath(), imageResource);
-            }
-        }
 
         if (attachmentResources != null) {
             for (FileSystemResource f : attachmentResources) {
@@ -193,4 +176,23 @@ public class NotifyServiceImpl implements NotifyService {
         mailSender.send(message);
 
     }
+
+
+    private String encodeImageToBase64(String imagePath) throws IOException {
+
+//        String currentWorkingDirectory = System.getProperty("user.dir");
+//        System.out.println(currentWorkingDirectory);
+        Path path = Paths.get(imagePath);
+
+        if (!Files.exists(path)) {
+            throw new FileNotFoundException("File not found: " + imagePath);
+        }
+
+        // read image
+        byte[] imageBytes = Files.readAllBytes(path);
+        // byte to base64
+        return Base64.getEncoder().encodeToString(imageBytes);
+
+    }
+
 }
