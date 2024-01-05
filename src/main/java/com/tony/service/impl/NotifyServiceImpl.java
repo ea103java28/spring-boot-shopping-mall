@@ -1,5 +1,6 @@
 package com.tony.service.impl;
 
+import com.tony.config.MailConfig;
 import com.tony.dto.GmailRequest;
 import com.tony.service.NotifyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +14,14 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.FileNotFoundException;
@@ -28,20 +31,19 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@PropertySource("classpath:env.properties")
+@PropertySource({
+        "classpath:line.properties",
+        "classpath:mail.properties"
+})
 @Service
 public class NotifyServiceImpl implements NotifyService {
 
-    @Autowired
-    private JavaMailSender mailSender;
+
 
     @Value("${line-token}")
     String lineToken;
@@ -52,6 +54,14 @@ public class NotifyServiceImpl implements NotifyService {
 
     @Value("${sticker-id:16581290}")
     String stickerId;
+
+
+    @Autowired
+    private MailConfig mailConfig;
+
+
+    private JavaMailSenderImpl mailSender;
+
 
     @Override
     public void lineNotify(String msg, String imageUrl) throws MalformedURLException {
@@ -93,12 +103,11 @@ public class NotifyServiceImpl implements NotifyService {
     public void gmailNotify(GmailRequest gmailRequest) throws MessagingException, IOException {
 
 
-
         List<FileSystemResource> attachmentResources = null;
         Function<String, String> pathImageTypeFunction =
                 i -> {
-                   String[] iArr = i.split("\\.");
-                   return iArr[iArr.length - 1];
+                    String[] iArr = i.split("\\.");
+                    return iArr[iArr.length - 1];
                 };
 
 
@@ -132,7 +141,8 @@ public class NotifyServiceImpl implements NotifyService {
         if (gmailRequest.getImagePaths() != null) {
             for (String i : gmailRequest.getImagePaths()
             ) {
-                htmlBody.append("<img src='data:image/").append(pathImageTypeFunction.apply(i)).append(";base64,").append(encodeImageToBase64(i)).append("' height='100px' width='auto' >");
+                htmlBody.append("<img src='data:image/").append(pathImageTypeFunction.apply(i)).append(";base64,")
+                        .append(encodeImageToBase64(i)).append("' height='100px' width='auto' >").append("</img>");
             }
         }
 
@@ -191,8 +201,26 @@ public class NotifyServiceImpl implements NotifyService {
         // read image
         byte[] imageBytes = Files.readAllBytes(path);
         // byte to base64
+//        System.out.println(Base64.getEncoder().encodeToString(imageBytes));
         return Base64.getEncoder().encodeToString(imageBytes);
 
     }
+
+
+    @PostConstruct
+    private void init() {
+        mailSender = new JavaMailSenderImpl();
+        mailSender.setHost(mailConfig.getHost());
+        mailSender.setPort(mailConfig.getPort());
+        mailSender.setUsername(mailConfig.getUsername());
+        mailSender.setPassword(mailConfig.getPassword());
+
+        Properties props = mailSender.getJavaMailProperties();
+        props.put("mail.smtp.auth", mailConfig.isAuthEnabled());
+        props.put("mail.smtp.starttls.enable", mailConfig.isStarttlsEnabled());
+        props.put("mail.transport.protocol", mailConfig.getProtocol());
+    }
+
+
 
 }
