@@ -9,8 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -26,6 +26,9 @@ public class UserServiceImpl implements UserService {
         return userDao.getUserById(userId);
     }
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public Integer register(UserRegisterRequest userRegisterRequest) {
         // 檢查email是否被註冊
@@ -36,8 +39,8 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
-        // 使用MD5生成密碼的雜湊值
-        String hashedPassword = DigestUtils.md5DigestAsHex(userRegisterRequest.getPassword().getBytes());
+        // 使用BCryptPasswordEncoder加密
+        String hashedPassword = passwordEncoder.encode(userRegisterRequest.getPassword());
         userRegisterRequest.setPassword(hashedPassword);
 
         // 創建帳號
@@ -54,11 +57,11 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
-        // 使用MD5生成密碼的雜湊值
-        String hashedPassword = DigestUtils.md5DigestAsHex(userLoginRequest.getPassword().getBytes());
 
+        // 使用BCryptPasswordEncoder加密
+        String hashedPassword = userLoginRequest.getPassword();
         // 比較密碼
-        if (user.getPassword().equals(hashedPassword)) {
+        if (passwordEncoder.matches(hashedPassword, user.getPassword())) {
             return user;
         } else {
             log.warn("email: {} wrong password", userLoginRequest.getEmail());
