@@ -4,7 +4,7 @@ A shopping mall backend developed using SpringBoot and employing Redis for cachi
 
 ## Environment
 
-1. Java JDK 8
+1. Java JDK 11
 2. Spring Boot: 2.3.7.RELEASE
 3. MySQL: latest
 
