@@ -1,7 +1,9 @@
-create database mall;
+CREATE DATABASE mall;
+
+USE mall;
 
 -- product
-
+DROP TABLE IF EXISTS product;
 CREATE TABLE product
 (
     product_id         INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -16,7 +18,7 @@ CREATE TABLE product
 );
 
 -- user
-
+DROP TABLE IF EXISTS user;
 CREATE TABLE user
 (
     user_id            INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -28,7 +30,7 @@ CREATE TABLE user
 
 
 -- order
-
+DROP TABLE IF EXISTS `order`;
 CREATE TABLE `order`
 (
     order_id           INT       NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -38,6 +40,8 @@ CREATE TABLE `order`
     last_modified_date TIMESTAMP    default CURRENT_TIMESTAMP NOT NULL on update CURRENT_TIMESTAMP
 );
 
+-- order_item
+DROP TABLE IF EXISTS order_item;
 CREATE TABLE order_item
 (
     order_item_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
