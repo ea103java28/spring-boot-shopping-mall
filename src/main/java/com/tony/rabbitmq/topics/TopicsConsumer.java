@@ -4,7 +4,7 @@ import com.google.common.base.Stopwatch;
 import com.tony.dto.ProductRequest;
 import com.tony.model.Product;
 import com.tony.service.ProductService;
-import com.tony.service.QueueService;
+//import com.tony.service.QueueService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,8 +22,8 @@ public class TopicsConsumer {
     @Autowired
     ProductService productService;
 
-    @Autowired
-    QueueService queueService;
+//    @Autowired
+//    QueueService queueService;
 
 
     @RabbitListener(queues = {"${queue.p.food}", "${queue.p.car}", "${queue.p.ebook}"})

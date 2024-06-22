@@ -6,7 +6,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 @EnableScheduling
-@CrossOrigin()
+@CrossOrigin(value = "*")
 @SpringBootApplication
 public class ShoppingMallApplication {
 

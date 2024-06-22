@@ -1,17 +1,17 @@
 package com.tony.dao.impl;
 
+import com.tony.dao.ProductDao;
 import com.tony.dto.ProductQueryParams;
 import com.tony.dto.ProductRequest;
 import com.tony.model.Product;
+import com.tony.repository.ProductRepository;
 import com.tony.rowmapper.ProductRowMapper;
-import com.tony.dao.ProductDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +21,9 @@ public class ProductDaoImpl implements ProductDao {
 
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     @Override
     public List<Product> getProducts(ProductQueryParams productQueryParams) {
@@ -46,6 +49,21 @@ public class ProductDaoImpl implements ProductDao {
         return productList;
     }
 
+    private String addFilteringSql(String sql, Map<String, Object> map, ProductQueryParams productQueryParams) {
+
+        if (productQueryParams.getCategory() != null) {
+            sql = sql + " AND category = :category";
+            map.put("category", productQueryParams.getCategory().name());
+        }
+
+        if (productQueryParams.getSearch() != null) {
+            sql = sql + " AND product_name LIKE :search";
+            map.put("search", "%" + productQueryParams.getSearch() + "%");
+        }
+
+        return sql;
+    }
+
     @Override
     public Integer countProduct(ProductQueryParams productQueryParams) {
 
@@ -63,100 +81,59 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public Product getProductById(Integer productId) {
-        String sql = "SELECT product_id, product_name, category, image_url, price, stock, " +
-                "description, created_date, last_modified_date " +
-                "FROM product WHERE product_id = :product_id";
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("product_id", productId);
-
-        List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
-
-        if (productList.isEmpty()) {
-            return null;
-        }
-
-        return productList.get(0);
+        Product product = productRepository.findById(productId).orElse(null);
+        return product;
     }
 
     @Override
     public Integer createProduct(ProductRequest productRequest) {
-        String sql = "INSERT INTO product (product_name, category, image_url, " +
-                "price, stock, description) " +
-                "VALUES (:productName, :category, :imageUrl, :price, :stock, " +
-                ":description)";
 
-        Map<String, Object> map = parseProductRequest(productRequest);
-
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
-
-        Integer productId = keyHolder.getKey().intValue();
-
-        return productId;
+        Product product = productRequestToProduct(productRequest);
+        Product savedProduct = productRepository.save(product);
+        return savedProduct.getProductId();
     }
 
     @Override
     public void updateProduct(Integer productId, ProductRequest productRequest) {
-        String sql = "UPDATE product SET product_name = :productName, " +
-                "category = :category, image_url = :imageUrl, price = :price, " +
-                "stock = :stock, description = :description " +
-                "WHERE product_id = :productId";
 
-        Map<String, Object> map = parseProductRequest(productRequest);
-        map.put("productId", productId);
 
-        namedParameterJdbcTemplate.update(sql, map);
+            Product product = productRequestToProduct(productRequest);
+            product.setProductId(productId);
+            productRepository.save(product);
 
     }
 
     @Override
     public void updateStock(Integer productId, Integer stock) {
-        String sql = "UPDATE product SET stock = :stock WHERE product_id = :productId";
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("productId", productId);
-        map.put("stock", stock);
-
-        namedParameterJdbcTemplate.update(sql, map);
+        Product product = productRepository.findById(productId).orElse(null);
+        if(product == null){
+            return;
+        }else{
+            product.setStock(stock);
+            productRepository.save(product);
+        }
     }
 
     @Override
     public void deleteProduct(Integer productId) {
-        String sql = "DELETE FROM product WHERE product_id = :productId";
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("productId", productId);
-
-        namedParameterJdbcTemplate.update(sql, map);
+        productRepository.deleteById(productId);
     }
 
-    private String addFilteringSql(String sql, Map<String, Object> map, ProductQueryParams productQueryParams) {
 
-        if (productQueryParams.getCategory() != null) {
-            sql = sql + " AND category = :category";
-            map.put("category", productQueryParams.getCategory().name());
-        }
+    private Product productRequestToProduct(ProductRequest productRequest){
 
-        if (productQueryParams.getSearch() != null) {
-            sql = sql + " AND product_name LIKE :search";
-            map.put("search", "%" + productQueryParams.getSearch() + "%");
-        }
+        Product product = new Product();
+        product.setProductName(productRequest.getProductName());
+        product.setPrice(productRequest.getPrice());
+        product.setImageUrl(productRequest.getImageUrl());
+        product.setStock(productRequest.getStock());
+        product.setDescription(productRequest.getDescription());
+        product.setCategory(productRequest.getCategory());
+        return product;
 
-        return sql;
     }
 
-    private Map<String, Object> parseProductRequest(ProductRequest productRequest) {
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("productName", productRequest.getProductName());
-        map.put("category", productRequest.getCategory().toString());
-        map.put("imageUrl", productRequest.getImageUrl());
-        map.put("price", productRequest.getPrice());
-        map.put("stock", productRequest.getStock());
-        map.put("description", productRequest.getDescription());
-
-        return map;
-    }
 }

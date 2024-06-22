@@ -6,7 +6,7 @@ import com.tony.dto.ProductQueryParams;
 import com.tony.dto.ProductRequest;
 import com.tony.model.Product;
 import com.tony.service.ProductService;
-import com.tony.service.QueueService;
+//import com.tony.service.QueueService;
 import com.tony.util.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -26,14 +26,14 @@ import java.util.List;
 @Validated
 @RestController
 @RequestMapping("/products")
-@CrossOrigin
+@CrossOrigin()
 public class ProductController {
 
     @Autowired
     private ProductService productService;
 
-    @Autowired
-    private QueueService queueService;
+//    @Autowired
+//    private QueueService queueService;
 
     @Operation(
             summary = "Query Product List",
@@ -99,11 +99,11 @@ public class ProductController {
         }
     }
 
-    @PostMapping("/enqueue")
-    public ResponseEntity enqueueProductToRedis(@RequestBody @Valid ProductRequest productRequest) throws JsonProcessingException {
-        queueService.enqueueProduct(productRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
+//    @PostMapping("/enqueue")
+//    public ResponseEntity enqueueProductToRedis(@RequestBody @Valid ProductRequest productRequest) throws JsonProcessingException {
+//        queueService.enqueueProduct(productRequest);
+//        return ResponseEntity.status(HttpStatus.CREATED).build();
+//    }
 
     @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody @Valid ProductRequest productRequest) {
