@@ -8,6 +8,9 @@ import javax.validation.constraints.NotNull;
 @Data
 public class ProductRequest {
 
+
+    private Integer productId;
+
     @NotNull
     private String productName;
 
