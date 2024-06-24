@@ -37,9 +37,10 @@ class ProductServiceImplSpyBeanTest {
         Product product = productService.getProductById(3);
         assertNotNull(product);
         assertEquals(product.getProductId(), 3);
-        assertEquals(product.getProductName(), "蘋果（日本北海道）");
+        assertEquals(product.getProductName(), "好吃又鮮甜的蘋果橘子");
         assertEquals(product.getCategory(), ProductCategory.FOOD);
-        assertEquals(product.getPrice(), 300);
+        assertEquals(product.getPrice(), 10);
+        assertEquals(product.getStock(), 50);
 
     }
 
