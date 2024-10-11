@@ -1,5 +1,6 @@
 package com.tony.dao.impl;
 
+import com.tony.constant.ServiceBeanConstants;
 import com.tony.dao.ProductDao;
 import com.tony.dto.ProductQueryParams;
 import com.tony.dto.ProductRequest;
@@ -10,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,8 +28,26 @@ public class ProductDaoImpl implements ProductDao {
     @Autowired
     private ProductRepository productRepository;
 
+    @PersistenceContext(unitName = ServiceBeanConstants.MSSQL_ENTITY_MGR_XXX)
+    private EntityManager entityManager;
+
+    @Transactional
     @Override
     public List<Product> getProducts(ProductQueryParams productQueryParams) {
+
+        String sql "select e from empoylee e";
+       TypedQuery<XXX> typedQuery = entityManager.createQuery(sql, XXX.class);
+       typedQuery.setParameter("xxx", xxx);
+       typedQuery.getResultList();
+
+        String sql2 "select * from eee_xxx";
+        Query typedQuery2 = entityManager.createNativeQuery(sql2);
+        List<Object> objs = typedQuery2.getResultList();
+        List<Empolyee> empolyeeList = getContactResult(objs);
+
+
+
+
         String sql = "SELECT product_id, product_name, category, image_url, price, stock, " +
                 "description, created_date, last_modified_date " +
                 "FROM product WHERE 1 = 1";
