@@ -28,7 +28,7 @@ public class ProductDaoImpl implements ProductDao {
     @Autowired
     private ProductRepository productRepository;
 
-    @PersistenceContext(unitName = ServiceBeanConstants.MSSQL_ENTITY_MGR_XXX)
+    @PersistenceContext(unitName = ServiceBeanConstants.MSSQL_ENTITY_MGR_MALL)
     private EntityManager entityManager;
 
     @Transactional

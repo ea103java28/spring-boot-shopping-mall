@@ -19,28 +19,28 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 @Configuration
-@EnableJpaRepositories(basePackages = {"xxx.zzz.aaa.qqq.service"},
-        entityManagerFactoryRef = ServiceBeanConstants.MSSQL_ENTITY_MGR_XXX,
-        transactionManagerRef = ServiceBeanConstants.MSSQL_TRANC_MGR_XXX)
-public class MsSqlAccessConfigXxx {
+@EnableJpaRepositories(basePackages = {"com.tony.service.impl"},
+        entityManagerFactoryRef = ServiceBeanConstants.MSSQL_ENTITY_MGR_MALL,
+        transactionManagerRef = ServiceBeanConstants.MSSQL_TRANC_MGR_MALL)
+public class MsSqlAccessConfigMall {
 
-    private static Logger logger = LoggerFactory.getLogger(MsSqlAccessConfigXxx.class);
+    private static Logger logger = LoggerFactory.getLogger(MsSqlAccessConfigMall.class);
 
-    @Bean(name = ServiceBeanConstants.MSSQL_TRANC_MGR_XXX)
+    @Bean(name = ServiceBeanConstants.MSSQL_TRANC_MGR_MALL)
     public JpaTransactionManager transactionManager(
-            @Qualifier(ServiceBeanConstants.MSSQL_ENTITY_MGR_XXX)EntityManagerFactory entityManagerFactory)
+            @Qualifier(ServiceBeanConstants.MSSQL_ENTITY_MGR_MALL)EntityManagerFactory entityManagerFactory)
     {
-        logger.info("Initialize :" + ServiceBeanConstants.MSSQL_TRANC_MGR_XXX);
+        logger.info("Initialize :" + ServiceBeanConstants.MSSQL_TRANC_MGR_MALL);
         return new JpaTransactionManager(entityManagerFactory);
     }
 
-    @Bean(name = "qqq")
-    public DataSource DataSourceMsSql(@Value() String jdbcUrl,
-                                      @Value() String username,
-                                         @Value() String password,
-                                                  @Value() Integer poolsize,
-                                                  @Value() String connectionTestQuery){
-        logger.info("Initialize :" + "qqq");
+    @Bean(ServiceBeanConstants.MSSQL_DATASOURCE_MGR_MALL)
+    public DataSource DataSourceMsSql(@Value("${mssql.datasource.jdbcUrl_mall}") String jdbcUrl,
+                                      @Value("${mssql.datasource.username_mall}") String username,
+                                      @Value("${mssql.datasource.password_mall}") String password,
+                                      @Value("${mssql.datasource.poolsize_mall}") Integer poolsize,
+                                      @Value("${}") String connectionTestQuery){
+        logger.info("Initialize :" + ServiceBeanConstants.MSSQL_DATASOURCE_MGR_MALL);
         logger.info("Jdbc URL connect to[" + jdbcUrl +"]");
 
         HikariConfig config = new HikariConfig();
@@ -54,16 +54,16 @@ public class MsSqlAccessConfigXxx {
 
     }
 
-    @Bean(name = ServiceBeanConstants.MSSQL_ENTITY_MGR_XXX)
+    @Bean(name = ServiceBeanConstants.MSSQL_ENTITY_MGR_MALL)
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryMsSql(
-            @Qualifier(ServiceBeanConstants.MSSQL_DATASOURCE_MGR_XXX) DataSource dataSource)
+            @Qualifier(ServiceBeanConstants.MSSQL_DATASOURCE_MGR_MALL) DataSource dataSource)
     {
-        logger.info("Initialize :" + ServiceBeanConstants.MSSQL_ENTITY_MGR_XXX);
+        logger.info("Initialize :" + ServiceBeanConstants.MSSQL_ENTITY_MGR_MALL);
         LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
         factoryBean.setDataSource(dataSource);
         factoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        factoryBean.setPackagesToScan("xxx.sss.aaa.model");
-        factoryBean.setPersistenceUnitName("mssql-xxx-model");
+        factoryBean.setPackagesToScan("com.tony.model");
+        factoryBean.setPersistenceUnitName("mssql-mall-model");
         factoryBean.setPersistenceUnitRootLocation("");
         return factoryBean;
 
