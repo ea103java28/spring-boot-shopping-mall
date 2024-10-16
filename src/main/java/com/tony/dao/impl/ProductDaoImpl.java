@@ -34,20 +34,20 @@ public class ProductDaoImpl implements ProductDao {
     @Override
     public List<Product> getProducts(ProductQueryParams productQueryParams) {
 
-        String sql "select e from empoylee e";
-       TypedQuery<XXX> typedQuery = entityManager.createQuery(sql, XXX.class);
-       typedQuery.setParameter("xxx", xxx);
-       typedQuery.getResultList();
-
-        String sql2 "select * from eee_xxx";
-        Query typedQuery2 = entityManager.createNativeQuery(sql2);
-        List<Object> objs = typedQuery2.getResultList();
-        List<Empolyee> empolyeeList = getContactResult(objs);
-        List<Object[] objs>
-
-        TypedQuery<Product> query =
-        entityManager.createNamedQuery("product.findAll", Product.class);
-        query.getResultList();
+//        String sql "select e from empoylee e";
+//       TypedQuery<XXX> typedQuery = entityManager.createQuery(sql, XXX.class);
+//       typedQuery.setParameter("xxx", xxx);
+//       typedQuery.getResultList();
+//
+//        String sql2 "select * from eee_xxx";
+//        Query typedQuery2 = entityManager.createNativeQuery(sql2);
+//        List<Object> objs = typedQuery2.getResultList();
+//        List<Empolyee> empolyeeList = getContactResult(objs);
+//        List<Object[] objs>
+//
+//        TypedQuery<Product> query =
+//        entityManager.createNamedQuery("product.findAll", Product.class);
+//        query.getResultList();
 
 
 

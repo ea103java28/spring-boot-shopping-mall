@@ -3,6 +3,7 @@ package com.tony.config;
 import com.tony.constant.ServiceBeanConstants;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import jakarta.persistence.EntityManagerFactory;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
-import javax.persistence.EntityManagerFactory;
+
 import javax.sql.DataSource;
 
 @Configuration
@@ -28,7 +29,7 @@ public class MsSqlAccessConfigMall {
 
     @Bean(name = ServiceBeanConstants.MSSQL_TRANC_MGR_MALL)
     public JpaTransactionManager transactionManager(
-            @Qualifier(ServiceBeanConstants.MSSQL_ENTITY_MGR_MALL)EntityManagerFactory entityManagerFactory)
+            @Qualifier(ServiceBeanConstants.MSSQL_ENTITY_MGR_MALL) EntityManagerFactory entityManagerFactory)
     {
         logger.info("Initialize :" + ServiceBeanConstants.MSSQL_TRANC_MGR_MALL);
         return new JpaTransactionManager(entityManagerFactory);

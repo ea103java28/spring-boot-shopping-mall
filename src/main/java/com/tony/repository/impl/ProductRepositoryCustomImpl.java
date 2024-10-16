@@ -6,7 +6,7 @@ import com.tony.repository.ProductRepositoryCustom;
 
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.List;
 
 @Repository

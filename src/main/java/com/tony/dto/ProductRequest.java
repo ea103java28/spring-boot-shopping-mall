@@ -3,7 +3,7 @@ package com.tony.dto;
 import com.tony.constant.ProductCategory;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 @Data
 public class ProductRequest {
