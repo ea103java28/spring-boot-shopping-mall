@@ -13,8 +13,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.*;
-import java.util.ArrayList;
+import jakarta.persistence.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +43,11 @@ public class ProductDaoImpl implements ProductDao {
         Query typedQuery2 = entityManager.createNativeQuery(sql2);
         List<Object> objs = typedQuery2.getResultList();
         List<Empolyee> empolyeeList = getContactResult(objs);
+        List<Object[] objs>
+
+        TypedQuery<Product> query =
+        entityManager.createNamedQuery("product.findAll", Product.class);
+        query.getResultList();
 
 
 

@@ -1,15 +1,17 @@
 package com.tony.model;
 
 import com.tony.constant.ProductCategory;
+import jakarta.persistence.*;
 import lombok.Data;
 
-import javax.persistence.*;
+
 import java.io.Serializable;
 import java.util.Date;
 
+@Data
 @Entity
 @Table(name = "product")
-@Data
+@NamedQuery(name = "product.findAll", query = "SELECT p FROM product p")
 public class Product implements Serializable {
 
     // for rabbitmqTemplate.convertAndSend(topicsExchangeProduct, routingKey, product);
