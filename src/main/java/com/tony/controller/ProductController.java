@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.*;
 
+import java.text.ParseException;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Validated
 @RestController
@@ -75,7 +78,18 @@ public class ProductController {
 
     @GetMapping("/findAllProductDto")
     public List<ProductRepository.ProductDto> findAllProductDto(){
-        return  productRepo.findAllProductDto();
+        return  productRepo.findAllProductDto()
+                .stream()
+//                .sorted(Comparator.comparing(ProductRepository.ProductDto::getLast_modified_date))
+                .sorted(Comparator.comparing(productDto -> {
+                    try {
+                        return productDto.getLast_modified_date_format();
+                    } catch (ParseException e) {
+                        // 在出現例外時，可以返回 null 或進行其他處理
+                        return null;
+                    } 
+                }))
+                .collect(Collectors.toList());
     }
 
 }
