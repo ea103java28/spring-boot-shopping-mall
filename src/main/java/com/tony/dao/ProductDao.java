@@ -7,15 +7,13 @@ import java.util.List;
 
 public interface ProductDao {
 
-    List<Product> getProducts(Product productQueryParams);
+    List<Product> getProducts();
 
     Product getProductById(Integer productId);
 
-    Integer createProduct(Product productRequest);
+    Integer createProduct(Product product);
 
-    void updateProduct(Integer productId, Product productRequest);
-
-    void updateStock(Integer productId, Integer stock);
+    void updateProduct(Integer productId, Product product);
 
     void deleteProduct(Integer productId);
 }

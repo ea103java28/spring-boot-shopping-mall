@@ -1,10 +1,8 @@
 package com.tony.service;
 
 import com.tony.dao.ProductDao;
-import com.tony.dto.ProductQueryParams;
-import com.tony.dto.ProductRequest;
 import com.tony.model.Product;
-import com.tony.service.ProductService;
+import com.tony.repo.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +15,10 @@ public class ProductServiceImpl implements ProductService {
     private ProductDao productDao;
 
     @Override
-    public List<Product> getProducts(ProductQueryParams productQueryParams) {
-        return productDao.getProducts(productQueryParams);
+    public List<Product> getProducts() {
+        return productDao.getProducts();
     }
 
-    @Override
-    public Integer countProduct(ProductQueryParams productQueryParams) {
-        return productDao.countProduct(productQueryParams);
-    }
 
     @Override
     public Product getProductById(Integer productId) {
@@ -32,17 +26,17 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Integer createProduct(ProductRequest productRequest) {
-        return productDao.createProduct(productRequest);
+    public Integer createProduct(Product product) {
+        return productDao.createProduct(product);
     }
 
     @Override
-    public void updateProduct(Integer productId, ProductRequest productRequest) {
-        productDao.updateProduct(productId, productRequest);
+    public void updateProduct(Integer productId, Product product) {
+     productDao.updateProduct(productId, product);
     }
 
     @Override
     public void deleteProduct(Integer productId) {
-        productDao.deleteProduct(productId);
+       productDao.deleteProduct(productId);
     }
 }

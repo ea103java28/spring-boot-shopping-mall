@@ -21,7 +21,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import javax.sql.DataSource;
 
 @Configuration
-@EnableJpaRepositories(basePackages = {"com.tony.service.impl"},
+@EnableJpaRepositories(basePackages = {"com.tony.service.impl","com.tony.repo"},
         entityManagerFactoryRef = ServiceBeanConstants.MSSQL_ENTITY_MGR_MALL,
         transactionManagerRef = ServiceBeanConstants.MSSQL_TRANC_MGR_MALL)
 public class MsSqlAccessConfigMall {
