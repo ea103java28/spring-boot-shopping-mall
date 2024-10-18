@@ -1,5 +1,6 @@
 package com.tony.controller;
 import com.tony.model.Product;
+import com.tony.repo.ProductRepository;
 import com.tony.service.ProductService;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+    @Autowired
+    private ProductRepository productRepo;
 
     @GetMapping("/")
     public ResponseEntity<List<Product>> getProducts(){
@@ -37,7 +40,6 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
-
 
     @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody @Valid Product product) {
@@ -69,4 +71,11 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.FAILED_DEPENDENCY).build();
 
     }
+
+
+    @GetMapping("/findAllProductDto")
+    public List<ProductRepository.ProductDto> findAllProductDto(){
+        return  productRepo.findAllProductDto();
+    }
+
 }
