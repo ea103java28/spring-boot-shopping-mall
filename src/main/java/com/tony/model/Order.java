@@ -10,7 +10,6 @@ import java.util.List;
 @Table(name = "order")
 @Data
 public class Order {
-    // 對應到order table
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

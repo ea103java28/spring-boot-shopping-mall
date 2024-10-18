@@ -1,4 +1,4 @@
-package com.tony.service.impl;
+package com.tony.service;
 
 import com.tony.dao.ProductDao;
 import com.tony.dto.ProductQueryParams;

@@ -11,11 +11,10 @@ import java.util.Date;
 @Data
 @Entity
 @Table(name = "product")
-@NamedQuery(name = "product.findAll", query = "SELECT p FROM product p")
+//@NamedQuery(name = "Product.findAll", query = "SELECT p FROM product p")
 public class Product implements Serializable {
 
-    // for rabbitmqTemplate.convertAndSend(topicsExchangeProduct, routingKey, product);
-    // java.lang.IllegalArgumentException: SimpleMessageConverter only supports String, byte[] and Serializable payloads, received: com.tony.model.Product
+
     private static final long serialVersionUID = 11234877563926L;
 
     @Id
@@ -27,7 +26,7 @@ public class Product implements Serializable {
     private String productName;
 
     @Column(name = "category")
-    @Enumerated(EnumType.STRING) // 確保枚舉類型映射正確
+    @Enumerated(EnumType.STRING) // check enum type is correct
     private ProductCategory category;
 
     @Column(name = "image_url")

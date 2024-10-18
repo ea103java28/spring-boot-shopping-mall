@@ -9,7 +9,6 @@ import jakarta.persistence.*;
 @Data
 public class OrderItem {
 
-    // 對應到order_item table
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_item_id")
