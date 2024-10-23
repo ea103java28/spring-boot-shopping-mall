@@ -1,19 +1,25 @@
 package com.tony.controller;
+import com.tony.constant.ServiceBeanConstants;
+import com.tony.model.MallDto;
 import com.tony.model.Product;
 import com.tony.repo.ProductRepository;
 import com.tony.service.ProductService;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.*;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Validated
@@ -26,6 +32,9 @@ public class ProductController {
     private ProductService productService;
     @Autowired
     private ProductRepository productRepo;
+    @Autowired
+    @Qualifier(ServiceBeanConstants.MSSQL_DATASOURC_JDBC_TEMPLETE_MALL)
+    JdbcTemplate jdbcTemplate;
 
     @GetMapping("/")
     public ResponseEntity<List<Product>> getProducts(){
@@ -91,5 +100,27 @@ public class ProductController {
                 }))
                 .collect(Collectors.toList());
     }
+
+    @GetMapping("/findMallDtoById/{product_id}")
+    public List<MallDto> findMallDtoByOrderId(@PathVariable Integer product_id){
+    String sql = "select p.product_id, p.category, o.amount, p.last_modified_date" +
+            "  from product p, order_item o " +
+            "where p.product_id = o.product_id  and p.product_id = ? ";
+
+        List<MallDto> result = new ArrayList<>();
+        List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, product_id);
+        System.out.println(list.size());
+        for (Map m : list) {
+            MallDto mallDto = new MallDto();
+            mallDto.setProduct_id((Integer)      m.get("product_id"));
+            mallDto.setCategory((String)         m.get("category"));
+            mallDto.setAmount((Integer)          m.get("amount"));
+            mallDto.setLast_modified_date((Date) m.get("last_modified_date"));
+            result.add(mallDto);
+        }
+        return result;
+
+    }
+
 
 }

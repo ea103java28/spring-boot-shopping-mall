@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -27,23 +28,24 @@ import javax.sql.DataSource;
 public class MsSqlAccessConfigMall {
 
     private static Logger logger = LoggerFactory.getLogger(MsSqlAccessConfigMall.class);
+
     @Primary
     @Bean(name = ServiceBeanConstants.MSSQL_TRANC_MGR_MALL)
     public JpaTransactionManager transactionManager(
-            @Qualifier(ServiceBeanConstants.MSSQL_ENTITY_MGR_MALL) EntityManagerFactory entityManagerFactory)
-    {
+            @Qualifier(ServiceBeanConstants.MSSQL_ENTITY_MGR_MALL) EntityManagerFactory entityManagerFactory) {
         logger.info("Initialize :" + ServiceBeanConstants.MSSQL_TRANC_MGR_MALL);
         return new JpaTransactionManager(entityManagerFactory);
     }
+
     @Primary
     @Bean(ServiceBeanConstants.MSSQL_DATASOURCE_MGR_MALL)
     public DataSource DataSourceMsSql(@Value("${mssql.datasource.jdbcUrl.mall}") String jdbcUrl,
                                       @Value("${mssql.datasource.username.mall}") String username,
                                       @Value("${mssql.datasource.password.mall}") String password,
-                                      @Value("${mssql.datasource.poolsize.mall}") Integer poolsize){
+                                      @Value("${mssql.datasource.poolsize.mall}") Integer poolsize) {
 
         logger.info("Initialize :" + ServiceBeanConstants.MSSQL_DATASOURCE_MGR_MALL);
-        logger.info("Jdbc URL connect to[" + jdbcUrl +"]");
+        logger.info("Jdbc URL connect to[" + jdbcUrl + "]");
 
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(jdbcUrl);
@@ -54,11 +56,11 @@ public class MsSqlAccessConfigMall {
         return new HikariDataSource(config);
 
     }
+
     @Primary
     @Bean(name = ServiceBeanConstants.MSSQL_ENTITY_MGR_MALL)
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryMsSql(
-            @Qualifier(ServiceBeanConstants.MSSQL_DATASOURCE_MGR_MALL) DataSource dataSource)
-    {
+            @Qualifier(ServiceBeanConstants.MSSQL_DATASOURCE_MGR_MALL) DataSource dataSource) {
         logger.info("Initialize :" + ServiceBeanConstants.MSSQL_ENTITY_MGR_MALL);
         LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
         factoryBean.setDataSource(dataSource);
@@ -69,6 +71,14 @@ public class MsSqlAccessConfigMall {
         return factoryBean;
 
     }
+
+    @Bean(name = ServiceBeanConstants.MSSQL_DATASOURC_JDBC_TEMPLETE_MALL)
+    public JdbcTemplate jdbcTemplate(
+            @Qualifier(ServiceBeanConstants.MSSQL_DATASOURCE_MGR_MALL) DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
+    }
+
+
 
 
 
