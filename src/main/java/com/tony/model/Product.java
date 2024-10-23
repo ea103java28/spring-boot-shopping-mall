@@ -11,7 +11,16 @@ import java.util.Date;
 @Data
 @Entity
 @Table(name = "product")
-//@NamedQuery(name = "Product.findAll", query = "SELECT p FROM product p")
+@NamedQueries({
+        @NamedQuery(
+                name = "Product.findAll",
+                query = "SELECT p FROM Product p"
+        ),
+        @NamedQuery(
+                name = "Product.findByCategory",
+                query = "SELECT p FROM Product p WHERE p.category = :category"
+        )
+})
 public class Product implements Serializable {
 
 

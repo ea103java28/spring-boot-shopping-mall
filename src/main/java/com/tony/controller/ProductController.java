@@ -1,10 +1,13 @@
 package com.tony.controller;
+import com.tony.constant.ProductCategory;
 import com.tony.constant.ServiceBeanConstants;
 import com.tony.model.MallDto;
 import com.tony.model.Product;
 import com.tony.repo.ProductRepository;
 import com.tony.service.ProductService;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -36,14 +39,17 @@ public class ProductController {
     @Qualifier(ServiceBeanConstants.MSSQL_DATASOURC_JDBC_TEMPLETE_MALL)
     JdbcTemplate jdbcTemplate;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @GetMapping("/")
-    public ResponseEntity<List<Product>> getProducts(){
+    public ResponseEntity getProducts(){
 
        return ResponseEntity.status(HttpStatus.OK).body(productService.getProducts());
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<Product> getProductById(@PathVariable Integer productId) {
+    public ResponseEntity getProductById(@PathVariable Integer productId) {
 
         Product product = productService.getProductById(productId);
         if (product != null) {
@@ -54,14 +60,14 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody @Valid Product product) {
+    public ResponseEntity createProduct(@RequestBody @Valid Product product) {
 
         Integer productId = productService.createProduct(product);
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.getProductById(productId));
     }
 
     @PutMapping("/{productId}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Integer productId,
+    public ResponseEntity updateProduct(@PathVariable Integer productId,
                                                  @RequestBody @Valid Product product) {
 
         Product product2 = productService.getProductById(productId);
@@ -73,7 +79,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{productId}")
-    public ResponseEntity<?> deleteProduct(@PathVariable Integer productId) {
+    public ResponseEntity deleteProduct(@PathVariable Integer productId) {
 
         productService.deleteProduct(productId);
         Product product = productService.getProductById(productId);
@@ -86,8 +92,10 @@ public class ProductController {
 
 
     @GetMapping("/findAllProductDto")
-    public List<ProductRepository.ProductDto> findAllProductDto(){
-        return  productRepo.findAllProductDto()
+    public ResponseEntity findAllProductDto(){
+        return  ResponseEntity.status(HttpStatus.OK).body(
+
+                productRepo.findAllProductDto()
                 .stream()
 //                .sorted(Comparator.comparing(ProductRepository.ProductDto::getLast_modified_date))
                 .sorted(Comparator.comparing(productDto -> {
@@ -98,11 +106,12 @@ public class ProductController {
                         return null;
                     } 
                 }))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList())
+        );
     }
 
     @GetMapping("/findMallDtoById/{product_id}")
-    public List<MallDto> findMallDtoByOrderId(@PathVariable Integer product_id){
+    public ResponseEntity findMallDtoByOrderId(@PathVariable Integer product_id){
     String sql = "select p.product_id, p.category, o.amount, p.last_modified_date" +
             "  from product p, order_item o " +
             "where p.product_id = o.product_id  and p.product_id = ? ";
@@ -118,9 +127,26 @@ public class ProductController {
             mallDto.setLast_modified_date((Date) m.get("last_modified_date"));
             result.add(mallDto);
         }
-        return result;
+        return  ResponseEntity.status(HttpStatus.OK).body(result);
 
     }
+
+    @GetMapping("/All")
+    public ResponseEntity findAllProducts(){
+        return  ResponseEntity.status(HttpStatus.OK).body(
+                entityManager.createNamedQuery("Product.findAll", Product.class)
+                .getResultList()
+        );
+    }
+    @GetMapping("/findProductsByCategory/{category}")
+    public ResponseEntity findProductsByCategory(@PathVariable ProductCategory category) {
+        return  ResponseEntity.status(HttpStatus.OK).body(
+                entityManager.createNamedQuery("Product.findByCategory", Product.class)
+                .setParameter("category", category)
+                .getResultList()
+                );
+    }
+
 
 
 }
